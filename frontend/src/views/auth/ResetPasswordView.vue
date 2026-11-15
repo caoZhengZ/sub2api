@@ -32,7 +32,7 @@
         <div class="text-center">
           <router-link
             to="/forgot-password"
-            class="inline-flex items-center gap-2 font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+            class="brand-link inline-flex items-center gap-2"
           >
             {{ t('auth.requestNewResetLink') }}
           </router-link>
@@ -190,7 +190,7 @@
         {{ t('auth.rememberedPassword') }}
         <router-link
           to="/login"
-          class="font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          class="brand-link"
         >
           {{ t('auth.signIn') }}
         </router-link>

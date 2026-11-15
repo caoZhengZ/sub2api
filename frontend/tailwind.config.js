@@ -5,6 +5,29 @@ export default {
   theme: {
     extend: {
       colors: {
+        // LargeChestnut brand chrome. Keep semantic colors separate from this scale.
+        brand: {
+          50: '#fdf1ed',
+          100: '#f9ddd4',
+          200: '#f3b9a8',
+          300: '#ec8f75',
+          400: '#e16443',
+          500: '#c84425',
+          600: '#a9361d',
+          700: '#862b18',
+          800: '#642113',
+          900: '#45170e',
+          950: '#250b06'
+        },
+        ink: {
+          DEFAULT: '#171513',
+          soft: '#302c28',
+          muted: '#58534d'
+        },
+        paper: {
+          DEFAULT: '#f6f5f2',
+          deep: '#ece9e3'
+        },
         // 主色调 - Teal/Cyan 青色系
         primary: {
           50: '#f0fdfa',
@@ -33,19 +56,19 @@ export default {
           900: '#0f172a',
           950: '#020617'
         },
-        // 深色模式背景
+        // 深色模式背景 - 暖石墨灰，避免纯黑和蓝黑底造成沉闷感
         dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617'
+          50: '#faf9f7',
+          100: '#f3f0eb',
+          200: '#e6e0d7',
+          300: '#d0c7bb',
+          400: '#aca295',
+          500: '#877d71',
+          600: '#686057',
+          700: '#4c463f',
+          800: '#35302b',
+          900: '#2a2622',
+          950: '#221f1c'
         }
       },
       fontFamily: {
@@ -80,7 +103,7 @@ export default {
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
-          'radial-gradient(at 40% 20%, rgba(20, 184, 166, 0.12) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.08) 0px, transparent 50%)'
+          'radial-gradient(at 78% 0%, rgba(200, 68, 37, 0.055) 0px, transparent 42%), radial-gradient(at 8% 55%, rgba(23, 21, 19, 0.035) 0px, transparent 46%)'
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',

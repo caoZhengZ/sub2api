@@ -11,7 +11,7 @@
       <!-- Custom Logo or Default Logo -->
       <router-link
         :to="homePath"
-        class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-glow transition-opacity hover:opacity-80"
+        class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl transition-opacity hover:opacity-80"
         @click="handleMenuItemClick(homePath)"
       >
         <img v-if="settingsLoaded" :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
@@ -19,13 +19,13 @@
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
         <router-link
           :to="homePath"
-          class="sidebar-brand-title text-lg font-bold text-gray-900 transition-colors hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
+          class="sidebar-brand-title text-lg font-bold text-ink dark:text-white"
           @click="handleMenuItemClick(homePath)"
         >
           {{ siteName }}
         </router-link>
         <!-- Version Badge -->
-        <VersionBadge :version="siteVersion" />
+        <VersionBadge class="sidebar-version-badge" :version="siteVersion" />
       </div>
     </div>
 
@@ -62,7 +62,7 @@
                 </span>
               </button>
               <!-- Children -->
-              <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="mb-1 ml-4 border-l border-gray-200 pl-2 dark:border-dark-600">
+              <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="mb-1 ml-4 border-l border-white/10 pl-2">
                 <router-link
                   v-for="child in item.children"
                   :key="child.path"
@@ -148,7 +148,7 @@
     </nav>
 
     <!-- Bottom Section -->
-    <div class="mt-auto border-t border-gray-100 p-3 dark:border-dark-800">
+    <div class="mt-auto border-t border-black/[0.07] p-3 dark:border-white/10">
       <!-- Theme Toggle -->
       <button
         @click="toggleTheme"
@@ -199,6 +199,7 @@ import { sanitizeUrl } from '@/utils/url'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
 import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
 import { useBatchImageAccess } from '@/composables/useBatchImageAccess'
+import { useTheme } from '@/composables/useTheme'
 
 interface NavItem {
   path: string
@@ -245,12 +246,12 @@ const authStore = useAuthStore()
 const onboardingStore = useOnboardingStore()
 const adminSettingsStore = useAdminSettingsStore()
 const { canUseBatchImage, refreshBatchImageAccess } = useBatchImageAccess()
+const { isDark, toggleTheme } = useTheme()
 
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
 const isAdmin = computed(() => authStore.isAdmin)
 const sidebarNavRef = ref<HTMLElement | null>(null)
-const isDark = ref(document.documentElement.classList.contains('dark'))
 
 const homePath = computed(() => (isAdmin.value ? '/admin/dashboard' : '/dashboard'))
 
@@ -870,12 +871,6 @@ function toggleSidebar() {
   appStore.toggleSidebar()
 }
 
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
-
 function closeMobile() {
   appStore.setMobileOpen(false)
 }
@@ -941,10 +936,7 @@ function handleGroupClick(item: NavItem) {
 
 // Initialize theme
 const savedTheme = localStorage.getItem('theme')
-if (
-  savedTheme === 'dark' ||
-  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-) {
+if (savedTheme === 'dark') {
   isDark.value = true
   document.documentElement.classList.add('dark')
 }
@@ -986,6 +978,8 @@ onBeforeUnmount(() => {
 .sidebar-logo {
   flex: 0 0 2.25rem;
   min-width: 2.25rem;
+  border: 1px solid rgb(23 21 19 / 0.08);
+  background: rgb(255 255 255 / 0.82);
 }
 
 .sidebar-header-collapsed {
@@ -1020,6 +1014,35 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
+.sidebar-brand-title:hover {
+  color: #ff9475;
+}
+
+.sidebar :deep(.sidebar-version-badge button) {
+  background: rgb(23 21 19 / 0.04);
+  color: rgb(23 21 19 / 0.48);
+}
+
+.sidebar :deep(.sidebar-version-badge button:hover) {
+  background: rgb(23 21 19 / 0.07);
+  color: rgb(23 21 19 / 0.72);
+}
+
+.dark .sidebar-logo {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.dark .sidebar :deep(.sidebar-version-badge button) {
+  background: rgb(255 255 255 / 0.06);
+  color: rgb(255 255 255 / 0.52);
+}
+
+.dark .sidebar :deep(.sidebar-version-badge button:hover) {
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.82);
+}
+
 .sidebar-link-collapsed {
   gap: 0;
   padding-left: 0.875rem;
@@ -1052,14 +1075,14 @@ onBeforeUnmount(() => {
   right: 0.75rem;
   top: 50%;
   height: 1px;
-  background: rgb(229 231 235);
+  background: rgb(23 21 19 / 0.09);
   opacity: 0;
   transform: translateY(-50%);
   transition: opacity 0.18s ease;
 }
 
 .dark .sidebar-section-title::after {
-  background: rgb(55 65 81);
+  background: rgb(255 255 255 / 0.1);
 }
 
 .sidebar-section-title-text-collapsed {

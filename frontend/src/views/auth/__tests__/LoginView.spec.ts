@@ -2,9 +2,11 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import LoginView from '@/views/auth/LoginView.vue'
 
-const { getPublicSettingsMock, pushMock } = vi.hoisted(() => ({
+const { getPublicSettingsMock, pushMock, createDesktopHandoffMock, routeQuery } = vi.hoisted(() => ({
   getPublicSettingsMock: vi.fn(),
-  pushMock: vi.fn()
+  pushMock: vi.fn(),
+  createDesktopHandoffMock: vi.fn(),
+  routeQuery: {} as Record<string, unknown>
 }))
 
 const publicSettings = {
@@ -33,7 +35,7 @@ const publicSettings = {
 vi.mock('vue-router', () => ({
   useRouter: () => ({
     push: pushMock,
-    currentRoute: { value: { query: {} } }
+    currentRoute: { value: { query: routeQuery } }
   })
 }))
 
@@ -63,6 +65,7 @@ vi.mock('@/stores', () => ({
 
 vi.mock('@/api/auth', () => ({
   buildOAuthLoginStartURL: vi.fn(),
+  createDesktopHandoff: (...args: unknown[]) => createDesktopHandoffMock(...args),
   getPublicSettings: (...args: unknown[]) => getPublicSettingsMock(...args),
   isTotp2FARequired: vi.fn(() => false),
   isWeChatWebOAuthEnabled: vi.fn(() => false),
@@ -94,6 +97,8 @@ describe('LoginView registration entry', () => {
   beforeEach(() => {
     getPublicSettingsMock.mockReset()
     pushMock.mockReset()
+    createDesktopHandoffMock.mockReset()
+    Object.keys(routeQuery).forEach(key => delete routeQuery[key])
     getPublicSettingsMock.mockResolvedValue(publicSettings)
   })
 
@@ -114,5 +119,25 @@ describe('LoginView registration entry', () => {
     await flushPromises()
 
     expect(wrapper.text()).not.toContain('auth.signUp')
+  })
+
+  it('shows an explicit return button after LargeChestnut desktop handoff login', async () => {
+    routeQuery.desktop_state = 's'.repeat(43)
+    routeQuery.desktop_challenge = 'c'.repeat(43)
+    createDesktopHandoffMock.mockResolvedValue({ code: 'one-time-code' })
+    const wrapper = mountLogin()
+    await flushPromises()
+    await wrapper.get('#email').setValue('user@example.com')
+    await wrapper.get('#password').setValue('local-test-password')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(createDesktopHandoffMock).toHaveBeenCalledWith('s'.repeat(43), 'c'.repeat(43))
+    expect(wrapper.text()).toContain('auth.desktopLoginReadyTitle')
+    const callback = new URL(wrapper.get('a[href^="zcode://"]').attributes('href')!)
+    expect(callback.searchParams.get('provider')).toBe('largechestnut-sub2api')
+    expect(callback.searchParams.get('state')).toBe('s'.repeat(43))
+    expect(callback.searchParams.get('code')).toBe('one-time-code')
+    expect(pushMock).not.toHaveBeenCalled()
   })
 })

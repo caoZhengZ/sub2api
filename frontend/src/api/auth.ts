@@ -41,6 +41,22 @@ export interface OAuthLoginStartResponse {
   authorize_url: string
 }
 
+export interface DesktopHandoffResponse {
+  code: string
+  expires_in?: number
+}
+
+export async function createDesktopHandoff(
+  state: string,
+  codeChallenge: string
+): Promise<DesktopHandoffResponse> {
+  const { data } = await apiClient.post<DesktopHandoffResponse>('/auth/desktop/handoff', {
+    state,
+    code_challenge: codeChallenge
+  })
+  return data
+}
+
 export function buildOAuthLoginStartURL(request: OAuthLoginStart): string {
   const apiBase = (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api/v1'
   const normalized = apiBase.replace(/\/$/, '')

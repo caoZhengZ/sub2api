@@ -1,6 +1,26 @@
 <template>
   <AuthLayout>
-    <div class="space-y-6">
+    <div v-if="desktopHandoffCallback" class="space-y-6 text-center">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ t('auth.desktopLoginReadyTitle') }}
+        </h2>
+        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+          {{ t('auth.desktopLoginReadyDescription') }}
+        </p>
+      </div>
+      <a :href="desktopHandoffCallback" class="btn btn-primary flex w-full items-center justify-center">
+        {{ t('auth.desktopLoginContinue') }}
+      </a>
+      <button
+        type="button"
+        class="brand-link text-sm"
+        @click="desktopHandoffCallback = null"
+      >
+        {{ t('auth.desktopLoginBack') }}
+      </button>
+    </div>
+    <div v-else class="space-y-6">
       <!-- Title -->
       <div class="text-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -71,7 +91,7 @@
             <router-link
               v-if="passwordResetEnabled && !backendModeEnabled"
               to="/forgot-password"
-              class="text-sm font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+              class="brand-link text-sm"
             >
               {{ t('auth.forgotPassword') }}
             </router-link>
@@ -197,12 +217,12 @@
     </div>
 
     <!-- Footer -->
-    <template v-if="!backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
+    <template v-if="!desktopHandoffCallback && !backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
       <p class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
         <router-link
           to="/register"
-          class="font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          class="brand-link"
         >
           {{ t('auth.signUp') }}
         </router-link>
@@ -238,6 +258,7 @@ import TurnstileWidget from '@/components/CaptchaChallenge.vue'
 import { useAuthStore, useAppStore } from '@/stores'
 import {
   buildOAuthLoginStartURL,
+  createDesktopHandoff,
   getPublicSettings,
   isTotp2FARequired,
   isWeChatWebOAuthEnabled,
@@ -268,6 +289,7 @@ const passkeyLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 const publicSettingsLoaded = ref<boolean>(false)
+const desktopHandoffCallback = ref<string | null>(null)
 
 // Public settings
 const registrationEnabled = ref<boolean>(false)
@@ -558,6 +580,28 @@ function validateForm(): boolean {
   return isValid
 }
 
+function readDesktopHandoffParams(): { state: string; challenge: string } | null {
+  const state = router.currentRoute.value.query.desktop_state
+  const challenge = router.currentRoute.value.query.desktop_challenge
+  const normalizedState = typeof state === 'string' ? state.trim() : ''
+  const normalizedChallenge = typeof challenge === 'string' ? challenge.trim() : ''
+  if (!/^[A-Za-z0-9_-]{32,256}$/.test(normalizedState)) return null
+  if (!/^[A-Za-z0-9_-]{43,128}$/.test(normalizedChallenge)) return null
+  return { state: normalizedState, challenge: normalizedChallenge }
+}
+
+async function completeDesktopHandoff(): Promise<boolean> {
+  const params = readDesktopHandoffParams()
+  if (!params) return false
+  const result = await createDesktopHandoff(params.state, params.challenge)
+  const callback = new URL('zcode://oauth/callback')
+  callback.searchParams.set('provider', 'largechestnut-sub2api')
+  callback.searchParams.set('state', params.state)
+  callback.searchParams.set('code', result.code)
+  desktopHandoffCallback.value = callback.toString()
+  return true
+}
+
 // ==================== Form Handlers ====================
 
 async function handleLogin(): Promise<void> {
@@ -600,6 +644,7 @@ async function handleLogin(): Promise<void> {
 
     // Show success toast
     clearAllAffiliateReferralCodes()
+    if (await completeDesktopHandoff()) return
     appStore.showSuccess(t('auth.loginSuccess'))
 
     // Redirect to dashboard or intended route
@@ -643,6 +688,7 @@ async function handlePasskeyLogin(): Promise<void> {
 
     await authStore.loginWithPasskey(proof)
     clearAllAffiliateReferralCodes()
+    if (await completeDesktopHandoff()) return
     appStore.showSuccess(t('auth.loginSuccess'))
     const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
     await router.push(redirectTo)
@@ -710,6 +756,7 @@ async function handle2FAVerify(code: string): Promise<void> {
     // Close modal and show success
     show2FAModal.value = false
     clearAllAffiliateReferralCodes()
+    if (await completeDesktopHandoff()) return
     appStore.showSuccess(t('auth.loginSuccess'))
 
     // Redirect to dashboard or intended route

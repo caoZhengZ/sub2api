@@ -2,9 +2,16 @@ package handler
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"log/slog"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
@@ -15,6 +22,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 // AuthHandler handles authentication-related requests
@@ -27,13 +35,18 @@ type AuthHandler struct {
 	redeemService        *service.RedeemService
 	totpService          *service.TotpService
 	userAttributeService *service.UserAttributeService
+	redisClient          *redis.Client
 
 	dingTalkClientInstance *DingTalkClient
 	dingTalkClientMu       sync.Mutex
 }
 
 // NewAuthHandler creates a new AuthHandler
-func NewAuthHandler(cfg *config.Config, authService *service.AuthService, userService *service.UserService, settingService *service.SettingService, promoService *service.PromoService, redeemService *service.RedeemService, totpService *service.TotpService, userAttributeService *service.UserAttributeService) *AuthHandler {
+func NewAuthHandler(cfg *config.Config, authService *service.AuthService, userService *service.UserService, settingService *service.SettingService, promoService *service.PromoService, redeemService *service.RedeemService, totpService *service.TotpService, userAttributeService *service.UserAttributeService, redisClients ...*redis.Client) *AuthHandler {
+	var redisClient *redis.Client
+	if len(redisClients) > 0 {
+		redisClient = redisClients[0]
+	}
 	return &AuthHandler{
 		cfg:                  cfg,
 		authService:          authService,
@@ -43,7 +56,159 @@ func NewAuthHandler(cfg *config.Config, authService *service.AuthService, userSe
 		redeemService:        redeemService,
 		totpService:          totpService,
 		userAttributeService: userAttributeService,
+		redisClient:          redisClient,
 	}
+}
+
+const desktopHandoffTTL = 2 * time.Minute
+const desktopHandoffKeyPrefix = "sub2api:desktop-handoff:"
+
+var consumeDesktopHandoffScript = redis.NewScript(`
+local value = redis.call("GET", KEYS[1])
+if not value then return "missing" end
+local record = cjson.decode(value)
+if record.state ~= ARGV[1] or record.code_challenge ~= ARGV[2] then return "mismatch" end
+redis.call("DEL", KEYS[1])
+return value
+`)
+
+type DesktopHandoffStartRequest struct {
+	State        string `json:"state" binding:"required"`
+	CodeChallenge string `json:"code_challenge" binding:"required"`
+}
+
+type DesktopHandoffExchangeRequest struct {
+	State    string `json:"state" binding:"required"`
+	Code     string `json:"code" binding:"required"`
+	Verifier string `json:"verifier" binding:"required"`
+}
+
+type DesktopHandoffResponse struct {
+	Code      string `json:"code"`
+	ExpiresIn int    `json:"expires_in"`
+}
+
+type desktopHandoffRecord struct {
+	State        string    `json:"state"`
+	CodeChallenge string   `json:"code_challenge"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	ExpiresIn    int       `json:"expires_in,omitempty"`
+	User         *dto.User `json:"user"`
+}
+
+func newDesktopHandoffCode() (string, error) {
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(bytes), nil
+}
+
+func desktopHandoffStorageKey(code string) string {
+	digest := sha256.Sum256([]byte(code))
+	return desktopHandoffKeyPrefix + hex.EncodeToString(digest[:])
+}
+
+func desktopHandoffCodeChallenge(verifier string) string {
+	digest := sha256.Sum256([]byte(verifier))
+	return base64.RawURLEncoding.EncodeToString(digest[:])
+}
+
+// CreateDesktopHandoff creates a one-time code after the browser session has authenticated.
+// The code is deliberately stored server-side so access/refresh tokens never enter a URL.
+func (h *AuthHandler) CreateDesktopHandoff(c *gin.Context) {
+	if h.redisClient == nil || h.authService == nil || h.userService == nil {
+		response.InternalError(c, "Desktop handoff is unavailable")
+		return
+	}
+	var req DesktopHandoffStartRequest
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.State) < 32 || len(req.State) > 256 || len(req.CodeChallenge) != 43 {
+		response.BadRequest(c, "Invalid desktop handoff state")
+		return
+	}
+	subject, ok := middleware2.GetAuthSubjectFromContext(c)
+	if !ok {
+		response.Unauthorized(c, "User not authenticated")
+		return
+	}
+	user, err := h.userService.GetByID(c.Request.Context(), subject.UserID)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	tokenPair, err := h.authService.GenerateTokenPair(c.Request.Context(), user, "")
+	if err != nil {
+		response.InternalError(c, "Failed to generate desktop handoff token")
+		return
+	}
+	code, err := newDesktopHandoffCode()
+	if err != nil {
+		response.InternalError(c, "Failed to create desktop handoff code")
+		return
+	}
+	record, err := json.Marshal(desktopHandoffRecord{
+		State:        req.State,
+		CodeChallenge: req.CodeChallenge,
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
+		ExpiresIn:    tokenPair.ExpiresIn,
+		User:         dto.UserFromService(user),
+	})
+	if err != nil {
+		response.InternalError(c, "Failed to create desktop handoff record")
+		return
+	}
+	if err := h.redisClient.Set(c.Request.Context(), desktopHandoffStorageKey(code), record, desktopHandoffTTL).Err(); err != nil {
+		response.InternalError(c, "Failed to store desktop handoff code")
+		return
+	}
+	response.Success(c, DesktopHandoffResponse{Code: code, ExpiresIn: int(desktopHandoffTTL / time.Second)})
+}
+
+// ExchangeDesktopHandoff consumes a handoff code exactly once.
+func (h *AuthHandler) ExchangeDesktopHandoff(c *gin.Context) {
+	if h.redisClient == nil {
+		response.InternalError(c, "Desktop handoff is unavailable")
+		return
+	}
+	var req DesktopHandoffExchangeRequest
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.State) < 32 || len(req.State) > 256 || len(req.Code) < 32 || len(req.Code) > 512 || len(req.Verifier) < 43 || len(req.Verifier) > 128 {
+		response.BadRequest(c, "Invalid desktop handoff request")
+		return
+	}
+	recordRaw, err := consumeDesktopHandoffScript.Run(
+		c.Request.Context(),
+		h.redisClient,
+		[]string{desktopHandoffStorageKey(req.Code)},
+		req.State,
+		desktopHandoffCodeChallenge(req.Verifier),
+	).Text()
+	if errors.Is(err, redis.Nil) || recordRaw == "missing" {
+		response.Unauthorized(c, "Desktop handoff code is expired or already used")
+		return
+	}
+	if err != nil {
+		response.InternalError(c, "Failed to read desktop handoff code")
+		return
+	}
+	if recordRaw == "mismatch" {
+		response.Unauthorized(c, "Invalid desktop handoff code")
+		return
+	}
+	recordBytes := []byte(recordRaw)
+	var record desktopHandoffRecord
+	if err := json.Unmarshal(recordBytes, &record); err != nil || record.AccessToken == "" || record.User == nil {
+		response.Unauthorized(c, "Invalid desktop handoff code")
+		return
+	}
+	response.Success(c, AuthResponse{
+		AccessToken:  record.AccessToken,
+		RefreshToken: record.RefreshToken,
+		ExpiresIn:    record.ExpiresIn,
+		TokenType:    "Bearer",
+		User:         record.User,
+	})
 }
 
 // RegisterRequest represents the registration request payload

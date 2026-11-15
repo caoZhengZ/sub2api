@@ -1,0 +1,2433 @@
+<!--
+  LargeChestnut custom homepage content
+  Paste the complete contents of this file into Admin > Settings > Site > Home Content.
+  The layout is self-contained HTML/CSS and does not depend on JavaScript.
+-->
+<meta charset="utf-8" />
+<style>
+  .s2h-root {
+    --s2h-paper: #f4f3ef;
+    --s2h-paper-deep: #e8e6e0;
+    --s2h-card: #fbfaf7;
+    --s2h-card-soft: rgba(251, 250, 247, 0.78);
+    --s2h-ink: #171513;
+    --s2h-muted: #58534d;
+    --s2h-faint: #867f77;
+    --s2h-line: rgba(23, 21, 19, 0.12);
+    --s2h-line-strong: rgba(23, 21, 19, 0.22);
+    --s2h-accent: #c84425;
+    --s2h-accent-bright: #e75231;
+    --s2h-accent-soft: #f8e2db;
+    --s2h-green: #267a58;
+    --s2h-green-soft: #e0ede5;
+    --s2h-header: rgba(247, 246, 242, 0.84);
+    --s2h-shadow: 0 30px 80px rgba(20, 18, 14, 0.11);
+    --s2h-shadow-soft: 0 16px 42px rgba(20, 18, 14, 0.07);
+    display: block;
+    color: var(--s2h-ink);
+    font-family: "Avenir Next", "SF Pro Display", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    font-synthesis: none;
+  }
+
+  .s2h-root *,
+  .s2h-root *::before,
+  .s2h-root *::after {
+    box-sizing: border-box;
+  }
+
+  .s2h-root a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .s2h-root h1,
+  .s2h-root h2,
+  .s2h-root h3,
+  .s2h-root p,
+  .s2h-root pre {
+    margin-top: 0;
+  }
+
+  .s2h-root img {
+    max-width: 100%;
+  }
+
+  .s2h-root ::selection {
+    background: var(--s2h-accent-soft);
+    color: var(--s2h-ink);
+  }
+
+  .s2h-theme-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .s2h-page {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 86% 4%, rgba(200, 68, 37, 0.07), transparent 28rem),
+      radial-gradient(circle at 8% 42%, rgba(38, 122, 88, 0.045), transparent 32rem),
+      linear-gradient(180deg, #faf9f6 0%, var(--s2h-paper) 42%, #eceae4 100%);
+    color: var(--s2h-ink);
+    transition: background 220ms ease, color 220ms ease;
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page {
+    --s2h-paper: #111110;
+    --s2h-paper-deep: #171615;
+    --s2h-card: #1b1a18;
+    --s2h-card-soft: rgba(27, 26, 24, 0.76);
+    --s2h-ink: #f7f5f1;
+    --s2h-muted: #c0bbb4;
+    --s2h-faint: #8e8880;
+    --s2h-line: rgba(247, 245, 241, 0.12);
+    --s2h-line-strong: rgba(247, 245, 241, 0.22);
+    --s2h-accent: #ff7653;
+    --s2h-accent-bright: #ff8b6a;
+    --s2h-accent-soft: rgba(255, 118, 83, 0.14);
+    --s2h-green: #69c39a;
+    --s2h-green-soft: rgba(105, 195, 154, 0.14);
+    --s2h-header: rgba(17, 17, 16, 0.84);
+    --s2h-shadow: 0 32px 85px rgba(0, 0, 0, 0.32);
+    --s2h-shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.24);
+    background:
+      radial-gradient(circle at 86% 4%, rgba(255, 118, 83, 0.10), transparent 28rem),
+      radial-gradient(circle at 8% 42%, rgba(105, 195, 154, 0.06), transparent 32rem),
+      linear-gradient(180deg, #151514 0%, var(--s2h-paper) 42%, #0d0d0c 100%);
+  }
+
+  .s2h-container {
+    position: relative;
+    z-index: 2;
+    width: min(1240px, calc(100% - 48px));
+    margin: 0 auto;
+  }
+
+  .s2h-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid color-mix(in srgb, var(--s2h-line) 78%, transparent);
+    background: var(--s2h-header);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .s2h-header-inner {
+    display: flex;
+    min-height: 84px;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .s2h-brand {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 11px;
+    font-size: 17px;
+    font-weight: 780;
+    letter-spacing: -0.02em;
+  }
+
+  .s2h-brand-mark {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 11px;
+    box-shadow: 0 8px 20px rgba(20, 18, 14, 0.14);
+  }
+
+  .s2h-brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .s2h-nav {
+    display: flex;
+    align-items: center;
+    gap: 27px;
+    margin-left: auto;
+    color: var(--s2h-muted);
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .s2h-nav a,
+  .s2h-footer a {
+    transition: color 160ms ease;
+  }
+
+  .s2h-nav a {
+    white-space: nowrap;
+  }
+
+  .s2h-nav a:hover,
+  .s2h-footer a:hover {
+    color: var(--s2h-ink);
+  }
+
+  .s2h-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .s2h-status-pill {
+    display: inline-flex;
+    min-height: 31px;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid var(--s2h-line);
+    border-radius: 999px;
+    padding: 0 11px;
+    background: var(--s2h-card-soft);
+    color: var(--s2h-faint);
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  .s2h-status-pill i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--s2h-green);
+    box-shadow: 0 0 0 4px var(--s2h-green-soft);
+  }
+
+  .s2h-btn {
+    display: inline-flex;
+    min-height: 43px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 0 17px;
+    font-size: 14px;
+    font-weight: 720;
+    line-height: 1;
+    white-space: nowrap;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .s2h-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .s2h-btn:focus-visible {
+    outline: 2px solid var(--s2h-accent);
+    outline-offset: 3px;
+  }
+
+  .s2h-root .s2h-btn-primary {
+    background: #171513;
+    color: #fffdf9;
+    box-shadow: 0 8px 18px rgba(20, 18, 14, 0.14);
+  }
+
+  .s2h-root .s2h-btn-primary:hover {
+    background: #302c28;
+    box-shadow: 0 10px 22px rgba(20, 18, 14, 0.18);
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-btn-primary {
+    background: #f7f5f1;
+    color: #171513;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-btn-primary:hover {
+    background: #ffffff;
+    color: #171513;
+  }
+
+  .s2h-root .s2h-btn-secondary {
+    border-color: var(--s2h-line-strong);
+    background: var(--s2h-card-soft);
+    color: var(--s2h-ink);
+  }
+
+  .s2h-root .s2h-btn-secondary:hover {
+    border-color: var(--s2h-line-strong);
+    background: var(--s2h-card);
+    color: var(--s2h-ink);
+  }
+
+  .s2h-btn-small {
+    min-height: 37px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .s2h-theme-toggle {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--s2h-line);
+    border-radius: 10px;
+    background: var(--s2h-card-soft);
+    color: var(--s2h-muted);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+
+  .s2h-theme-toggle:hover {
+    border-color: var(--s2h-line-strong);
+    color: var(--s2h-ink);
+  }
+
+  .s2h-theme-input:focus-visible ~ .s2h-page .s2h-theme-toggle {
+    outline: 2px solid var(--s2h-accent);
+    outline-offset: 3px;
+  }
+
+  .s2h-theme-dark {
+    display: none;
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-theme-light {
+    display: none;
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-theme-dark {
+    display: inline;
+  }
+
+  .s2h-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.01fr) minmax(450px, 0.99fr);
+    gap: 64px;
+    align-items: center;
+    min-width: 0;
+    min-height: 720px;
+    padding: 82px 0 70px;
+  }
+
+  .s2h-hero-copy {
+    position: relative;
+    z-index: 3;
+    min-width: 0;
+  }
+
+  .s2h-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    color: var(--s2h-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .s2h-eyebrow::before {
+    width: 25px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--s2h-accent);
+    content: "";
+  }
+
+  .s2h-hero h1 {
+    max-width: 680px;
+    margin-bottom: 28px;
+    font-size: clamp(50px, 5.5vw, 76px);
+    font-weight: 790;
+    letter-spacing: -0.062em;
+    line-height: 0.98;
+    overflow-wrap: anywhere;
+  }
+
+  .s2h-hero h1 span {
+    background: linear-gradient(180deg, transparent 73%, var(--s2h-accent-soft) 73%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    color: var(--s2h-ink);
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-hero h1 span {
+    background: linear-gradient(180deg, transparent 82%, rgba(255, 118, 83, 0.36) 82%);
+  }
+
+  .s2h-lead {
+    max-width: 590px;
+    margin-bottom: 31px;
+    color: var(--s2h-muted);
+    font-size: 17px;
+    line-height: 1.78;
+    overflow-wrap: anywhere;
+  }
+
+  .s2h-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .s2h-proof-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 26px;
+    color: var(--s2h-faint);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .s2h-proof-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .s2h-proof-row span::before {
+    display: inline-grid;
+    width: 16px;
+    height: 16px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--s2h-green-soft);
+    color: var(--s2h-green);
+    content: "✓";
+    font-size: 9px;
+    font-weight: 900;
+  }
+
+  .s2h-stage {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 570px;
+    place-items: center;
+    perspective: 1300px;
+  }
+
+  .s2h-orbit {
+    position: absolute;
+    border: 1px solid rgba(23, 21, 19, 0.10);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .s2h-orbit-a {
+    width: 590px;
+    height: 590px;
+  }
+
+  .s2h-orbit-b {
+    width: 468px;
+    height: 468px;
+    border-style: dashed;
+    opacity: 0.72;
+  }
+
+  .s2h-console {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 600px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 25px;
+    background: #171716;
+    color: #f7f5f1;
+    box-shadow: 0 42px 90px rgba(20, 18, 14, 0.28), 0 0 0 1px rgba(20, 18, 14, 0.14);
+    transform: rotate(-1.1deg);
+  }
+
+  .s2h-console::after {
+    position: absolute;
+    top: -80px;
+    right: -50px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 118, 83, 0.13), transparent 68%);
+    content: "";
+    pointer-events: none;
+  }
+
+  .s2h-console-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    height: 46px;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0 17px;
+    color: rgba(255, 248, 241, 0.62);
+    font-size: 11px;
+  }
+
+  .s2h-window-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .s2h-window-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #49433e;
+  }
+
+  .s2h-window-dots i:first-child {
+    background: #cf6852;
+  }
+
+  .s2h-window-dots i:nth-child(2) {
+    background: #d3aa4d;
+  }
+
+  .s2h-window-dots i:last-child {
+    background: #579466;
+  }
+
+  .s2h-console-top strong {
+    margin-left: 5px;
+    font-weight: 650;
+  }
+
+  .s2h-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    border: 1px solid rgba(95, 183, 133, 0.2);
+    border-radius: 999px;
+    padding: 4px 8px;
+    background: rgba(47, 119, 88, 0.13);
+    color: #79cba0;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .s2h-live-pill i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #79cba0;
+    box-shadow: 0 0 0 3px rgba(121, 203, 160, 0.12);
+  }
+
+  .s2h-console-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 144px minmax(0, 1fr);
+    min-height: 454px;
+  }
+
+  .s2h-console-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 16px 11px;
+    background: #1d1c1a;
+  }
+
+  .s2h-console-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    color: #f7f5f1;
+    font-size: 11px;
+    font-weight: 720;
+  }
+
+  .s2h-console-brand img {
+    width: 25px;
+    height: 25px;
+    border-radius: 7px;
+  }
+
+  .s2h-side-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    padding: 8px 9px;
+    color: #91877f;
+    font-size: 10px;
+  }
+
+  .s2h-side-item::before {
+    width: 11px;
+    height: 11px;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    content: "";
+    opacity: 0.72;
+  }
+
+  .s2h-side-item-active {
+    background: rgba(255, 255, 255, 0.07);
+    color: #f5e9de;
+  }
+
+  .s2h-console-spacer {
+    flex: 1;
+  }
+
+  .s2h-console-user {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 11px;
+    color: #a69b93;
+    font-size: 9px;
+  }
+
+  .s2h-avatar {
+    display: grid;
+    width: 21px;
+    height: 21px;
+    place-items: center;
+    border-radius: 50%;
+    background: #4b4640;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+  }
+
+  .s2h-console-main {
+    min-width: 0;
+    padding: 22px 20px 18px;
+    background: radial-gradient(circle at 76% 5%, rgba(255, 255, 255, 0.055), transparent 38%), #1b1a18;
+  }
+
+  .s2h-console-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .s2h-console-heading h3 {
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 720;
+  }
+
+  .s2h-console-heading p {
+    margin-bottom: 0;
+    color: #92867e;
+    font-size: 9px;
+  }
+
+  .s2h-healthy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #72c295;
+    font-size: 8px;
+    font-weight: 650;
+  }
+
+  .s2h-healthy::before {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+  }
+
+  .s2h-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .s2h-kpi {
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 9px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .s2h-kpi span {
+    display: block;
+    overflow: hidden;
+    color: #8f837b;
+    font-size: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .s2h-kpi strong {
+    display: block;
+    margin-top: 5px;
+    overflow: hidden;
+    color: #f3e8dd;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .s2h-request-card {
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 11px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .s2h-request-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #8f837b;
+    font-size: 8px;
+  }
+
+  .s2h-request-head code {
+    overflow: hidden;
+    color: #d7cabd;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .s2h-flow {
+    display: grid;
+    grid-template-columns: 1fr 18px 1fr 18px 1fr;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 13px;
+  }
+
+  .s2h-flow-node {
+    display: grid;
+    min-height: 34px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #c9bbb0;
+    font-size: 8px;
+  }
+
+  .s2h-flow-node-accent {
+    border-color: rgba(255, 118, 83, 0.30);
+    background: rgba(255, 118, 83, 0.13);
+    color: #ffb29e;
+  }
+
+  .s2h-flow-arrow {
+    color: #655c56;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .s2h-route-list {
+    display: grid;
+    gap: 7px;
+  }
+
+  .s2h-route-row {
+    display: grid;
+    grid-template-columns: 7px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    color: #b9aca2;
+    font-size: 8px;
+  }
+
+  .s2h-route-row i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff7653;
+    box-shadow: 0 0 0 3px rgba(255, 118, 83, 0.11);
+  }
+
+  .s2h-route-row-track {
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .s2h-route-row-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #e14c2b, #ff8968);
+  }
+
+  .s2h-route-row em {
+    color: #6fbf93;
+    font-style: normal;
+  }
+
+  .s2h-float-card {
+    position: absolute;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.56);
+    border-radius: 14px;
+    padding: 11px 13px;
+    background: rgba(251, 250, 247, 0.92);
+    color: #171513;
+    box-shadow: 0 18px 40px rgba(20, 18, 14, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .s2h-float-a {
+    top: 93px;
+    right: -24px;
+    animation: s2h-float 6s ease-in-out infinite;
+  }
+
+  .s2h-float-b {
+    bottom: 75px;
+    left: -18px;
+    animation: s2h-float 7s ease-in-out 0.7s infinite;
+  }
+
+  .s2h-float-icon {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    flex: none;
+    place-items: center;
+    border-radius: 9px;
+    background: #f8e2db;
+    color: #b93b1f;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .s2h-float-icon-green {
+    background: #dcebdd;
+    color: #2f7758;
+  }
+
+  .s2h-float-card div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .s2h-float-card strong {
+    font-size: 10px;
+    font-weight: 750;
+  }
+
+  .s2h-float-card small {
+    color: #746d65;
+    font-size: 8px;
+  }
+
+  @keyframes s2h-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  .s2h-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--s2h-line);
+    border-bottom: 1px solid var(--s2h-line);
+  }
+
+  .s2h-strip-item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 13px;
+    align-items: start;
+    padding: 24px 24px 25px;
+  }
+
+  .s2h-strip-item + .s2h-strip-item {
+    border-left: 1px solid var(--s2h-line);
+  }
+
+  .s2h-strip-number {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--s2h-accent-soft);
+    color: var(--s2h-accent);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .s2h-strip-item strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 720;
+  }
+
+  .s2h-strip-item span:last-child {
+    display: block;
+    color: var(--s2h-muted);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .s2h-section {
+    padding-top: 112px;
+  }
+
+  .s2h-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 34px;
+    margin-bottom: 30px;
+  }
+
+  .s2h-kicker {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 11px;
+    color: var(--s2h-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .s2h-kicker::before {
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--s2h-accent);
+    content: "";
+  }
+
+  .s2h-section h2 {
+    max-width: 720px;
+    margin-bottom: 0;
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 780;
+    letter-spacing: -0.055em;
+    line-height: 1.03;
+  }
+
+  .s2h-section-intro {
+    max-width: 390px;
+    margin-bottom: 3px;
+    color: var(--s2h-muted);
+    font-size: 14px;
+    line-height: 1.75;
+    text-align: right;
+  }
+
+  .s2h-bento {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 15px;
+  }
+
+  .s2h-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--s2h-line);
+    border-radius: 22px;
+    padding: 27px;
+    background: var(--s2h-card-soft);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.48) inset;
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .s2h-card:hover {
+    z-index: 2;
+    border-color: color-mix(in srgb, var(--s2h-accent) 42%, var(--s2h-line));
+    box-shadow: var(--s2h-shadow-soft);
+    transform: translateY(-3px);
+  }
+
+  .s2h-card-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 19px;
+    color: var(--s2h-accent);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .s2h-card-label::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+  }
+
+  .s2h-card h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .s2h-card p {
+    margin-bottom: 0;
+    color: var(--s2h-muted);
+    font-size: 13px;
+    line-height: 1.67;
+  }
+
+  .s2h-card-code {
+    grid-column: span 7;
+    min-height: 354px;
+    border-color: rgba(255, 255, 255, 0.06);
+    background: #171615;
+    color: #faf9f6;
+    box-shadow: 0 26px 60px rgba(20, 18, 14, 0.20);
+  }
+
+  .s2h-card-code:hover {
+    border-color: rgba(255, 118, 83, 0.28);
+  }
+
+  .s2h-card-code::before {
+    position: absolute;
+    top: -90px;
+    right: -70px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 118, 83, 0.13), transparent 68%);
+    content: "";
+  }
+
+  .s2h-card-code .s2h-card-label {
+    color: #ff9a7c;
+  }
+
+  .s2h-card-code h3 {
+    color: #faf9f6;
+  }
+
+  .s2h-card-code p {
+    max-width: 480px;
+    color: #a99a8e;
+  }
+
+  .s2h-codebox {
+    position: relative;
+    z-index: 1;
+    margin: 21px 0 0;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 13px;
+    padding: 17px 18px;
+    background: rgba(7, 5, 3, 0.34);
+    color: #cdbfb3;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  .s2h-codebox .muted {
+    color: #7d7068;
+  }
+
+  .s2h-codebox .key {
+    color: #ff9c80;
+  }
+
+  .s2h-codebox .string {
+    color: #91c8a3;
+  }
+
+  .s2h-card-pool {
+    grid-column: span 5;
+    min-height: 354px;
+  }
+
+  .s2h-pool-visual {
+    display: grid;
+    gap: 8px;
+    margin-top: 25px;
+  }
+
+  .s2h-pool-row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--s2h-line);
+    border-radius: 10px;
+    padding: 9px 10px;
+    background: var(--s2h-card);
+  }
+
+  .s2h-pool-avatar {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--s2h-accent-soft);
+    color: var(--s2h-accent);
+    font-size: 8px;
+    font-weight: 800;
+  }
+
+  .s2h-pool-avatar-green {
+    background: var(--s2h-green-soft);
+    color: var(--s2h-green);
+  }
+
+  .s2h-pool-avatar-dark {
+    background: rgba(34, 22, 15, 0.08);
+    color: var(--s2h-muted);
+  }
+
+  .s2h-pool-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .s2h-pool-copy strong {
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .s2h-pool-copy span {
+    color: var(--s2h-faint);
+    font-size: 8px;
+  }
+
+  .s2h-pool-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--s2h-green);
+    font-size: 8px;
+    font-weight: 700;
+  }
+
+  .s2h-pool-state::before {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+  }
+
+  .s2h-pool-state-warm {
+    color: var(--s2h-accent);
+  }
+
+  .s2h-card-small {
+    grid-column: span 4;
+    min-height: 265px;
+  }
+
+  .s2h-card-small h3 {
+    font-size: 19px;
+  }
+
+  .s2h-mini-panel {
+    margin-top: 22px;
+    border: 1px solid var(--s2h-line);
+    border-radius: 12px;
+    padding: 12px;
+    background: var(--s2h-card);
+  }
+
+  .s2h-mini-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--s2h-muted);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+  }
+
+  .s2h-mini-route + .s2h-mini-route {
+    margin-top: 8px;
+    border-top: 1px solid var(--s2h-line);
+    padding-top: 8px;
+  }
+
+  .s2h-mini-route span:last-child {
+    color: var(--s2h-green);
+  }
+
+  .s2h-ledger {
+    display: grid;
+    gap: 7px;
+    margin-top: 22px;
+  }
+
+  .s2h-ledger-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    border-bottom: 1px dashed var(--s2h-line);
+    padding-bottom: 7px;
+    color: var(--s2h-muted);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+  }
+
+  .s2h-ledger-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .s2h-ledger-row strong {
+    color: var(--s2h-accent);
+    font-weight: 700;
+  }
+
+  .s2h-ops-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+    margin-top: 22px;
+  }
+
+  .s2h-ops-tile {
+    display: grid;
+    min-height: 51px;
+    place-items: center;
+    border: 1px solid var(--s2h-line);
+    border-radius: 10px;
+    background: var(--s2h-card);
+    color: var(--s2h-muted);
+    font-size: 9px;
+    font-weight: 650;
+    text-align: center;
+  }
+
+  .s2h-start-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    gap: 50px;
+    align-items: center;
+  }
+
+  .s2h-start-grid > *,
+  .s2h-billing-grid > * {
+    min-width: 0;
+  }
+
+  .s2h-steps {
+    display: grid;
+    gap: 0;
+  }
+
+  .s2h-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 16px;
+    border-bottom: 1px solid var(--s2h-line);
+    padding: 23px 0;
+  }
+
+  .s2h-step:first-child {
+    padding-top: 0;
+  }
+
+  .s2h-step:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .s2h-step-index {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 1px solid var(--s2h-line-strong);
+    border-radius: 50%;
+    color: var(--s2h-accent);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .s2h-step h3 {
+    margin-bottom: 7px;
+    font-size: 18px;
+    font-weight: 740;
+    letter-spacing: -0.025em;
+  }
+
+  .s2h-step p {
+    margin-bottom: 0;
+    color: var(--s2h-muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .s2h-terminal {
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 22px;
+    background: #1c1612;
+    color: #e9ddd2;
+    box-shadow: var(--s2h-shadow);
+  }
+
+  .s2h-terminal-head {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    gap: 11px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 0 17px;
+    color: #91847b;
+    font-size: 10px;
+  }
+
+  .s2h-terminal-body {
+    padding: 24px 22px 27px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 11px;
+    line-height: 2;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .s2h-terminal-body .label {
+    color: #988a80;
+  }
+
+  .s2h-terminal-body .value {
+    color: #ffa488;
+  }
+
+  .s2h-terminal-body .green {
+    color: #83c59d;
+  }
+
+  .s2h-terminal-body .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: #ff7653;
+    vertical-align: -2px;
+    animation: s2h-blink 1.05s steps(2, jump-none) infinite;
+  }
+
+  @keyframes s2h-blink {
+    50% { opacity: 0; }
+  }
+
+  .s2h-client-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .s2h-client {
+    border: 1px solid var(--s2h-line);
+    border-radius: 999px;
+    padding: 7px 11px;
+    background: var(--s2h-card-soft);
+    color: var(--s2h-muted);
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .s2h-client-note {
+    width: 100%;
+    margin-top: 4px;
+    color: var(--s2h-faint);
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .s2h-billing-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: 16px;
+  }
+
+  .s2h-ledger-card {
+    overflow: hidden;
+    border: 1px solid var(--s2h-line);
+    border-radius: 22px;
+    background: var(--s2h-card-soft);
+  }
+
+  .s2h-ledger-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid var(--s2h-line);
+    padding: 18px 21px;
+    color: var(--s2h-muted);
+    font-size: 11px;
+  }
+
+  .s2h-ledger-head strong {
+    color: var(--s2h-ink);
+    font-weight: 720;
+  }
+
+  .s2h-ledger-head span {
+    color: var(--s2h-faint);
+    font-size: 9px;
+  }
+
+  .s2h-ledger-table {
+    display: grid;
+  }
+
+  .s2h-ledger-table-row {
+    display: grid;
+    grid-template-columns: 95px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    border-bottom: 1px solid var(--s2h-line);
+    padding: 15px 21px;
+    color: var(--s2h-muted);
+    font-size: 11px;
+  }
+
+  .s2h-ledger-table-row:last-child {
+    border-bottom: 0;
+  }
+
+  .s2h-ledger-table-row time {
+    color: var(--s2h-faint);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+  }
+
+  .s2h-ledger-model {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .s2h-ledger-model strong {
+    overflow: hidden;
+    color: var(--s2h-ink);
+    font-size: 11px;
+    font-weight: 680;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .s2h-ledger-model span {
+    color: var(--s2h-faint);
+    font-size: 9px;
+  }
+
+  .s2h-ledger-cost {
+    border-radius: 999px;
+    padding: 5px 8px;
+    background: var(--s2h-green-soft);
+    color: var(--s2h-green);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .s2h-billing-notes {
+    display: grid;
+    gap: 10px;
+  }
+
+  .s2h-note-card {
+    border: 1px solid var(--s2h-line);
+    border-radius: 18px;
+    padding: 21px;
+    background: var(--s2h-card-soft);
+  }
+
+  .s2h-note-card:first-child {
+    background: color-mix(in srgb, var(--s2h-accent-soft) 72%, var(--s2h-card));
+  }
+
+  .s2h-theme-input:checked ~ .s2h-page .s2h-note-card:first-child {
+    background: rgba(255, 118, 83, 0.10);
+  }
+
+  .s2h-note-card h3 {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 730;
+  }
+
+  .s2h-note-card p {
+    margin-bottom: 0;
+    color: var(--s2h-muted);
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .s2h-note-tag {
+    display: inline-flex;
+    margin-bottom: 13px;
+    border: 1px solid var(--s2h-line);
+    border-radius: 999px;
+    padding: 5px 8px;
+    background: var(--s2h-card-soft);
+    color: var(--s2h-accent);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .s2h-faq-list {
+    border-top: 1px solid var(--s2h-line);
+  }
+
+  .s2h-faq-list details {
+    border-bottom: 1px solid var(--s2h-line);
+  }
+
+  .s2h-faq-list summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 22px 2px;
+    color: var(--s2h-ink);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 680;
+    letter-spacing: -0.015em;
+    list-style: none;
+  }
+
+  .s2h-faq-list summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .s2h-faq-list summary::after {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    flex: none;
+    place-items: center;
+    border: 1px solid var(--s2h-line);
+    border-radius: 50%;
+    color: var(--s2h-accent);
+    content: "+";
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 16px;
+    font-weight: 500;
+    transition: transform 160ms ease, background 160ms ease;
+  }
+
+  .s2h-faq-list details[open] summary::after {
+    background: var(--s2h-accent-soft);
+    content: "−";
+    transform: rotate(180deg);
+  }
+
+  .s2h-faq-answer {
+    max-width: 860px;
+    padding: 0 48px 24px 2px;
+    color: var(--s2h-muted);
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .s2h-faq-answer p {
+    margin-bottom: 0;
+  }
+
+  .s2h-faq-answer a {
+    color: var(--s2h-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .s2h-final {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 112px;
+    border-radius: 30px;
+    padding: 48px 50px;
+    background: #161514;
+    color: #fffdf9;
+    box-shadow: var(--s2h-shadow);
+  }
+
+  .s2h-final::before {
+    position: absolute;
+    top: -150px;
+    right: 80px;
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 118, 83, 0.16), transparent 65%);
+    content: "";
+  }
+
+  .s2h-final::after {
+    position: absolute;
+    right: -100px;
+    bottom: -170px;
+    width: 390px;
+    height: 390px;
+    border: 1px solid rgba(255, 248, 239, 0.08);
+    border-radius: 50%;
+    content: "";
+  }
+
+  .s2h-final-copy,
+  .s2h-final-actions {
+    position: relative;
+    z-index: 1;
+  }
+
+  .s2h-final .s2h-kicker {
+    color: #ff9475;
+  }
+
+  .s2h-final h2 {
+    max-width: 760px;
+    margin-bottom: 13px;
+    font-size: clamp(31px, 4vw, 46px);
+    font-weight: 760;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+  }
+
+  .s2h-final p {
+    max-width: 620px;
+    margin-bottom: 0;
+    color: #aaa49d;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .s2h-final-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 9px;
+  }
+
+  .s2h-final .s2h-btn-primary {
+    background: #f7f5f1;
+    color: #171513;
+  }
+
+  .s2h-final .s2h-btn-primary:hover {
+    background: #ffffff;
+    color: #171513;
+  }
+
+  .s2h-final .s2h-btn-secondary {
+    border-color: rgba(255, 253, 249, 0.18);
+    background: rgba(255, 253, 249, 0.06);
+    color: #fffdf9;
+  }
+
+  .s2h-final .s2h-btn-secondary:hover {
+    border-color: rgba(255, 253, 249, 0.38);
+    background: rgba(255, 253, 249, 0.10);
+    color: #ffffff;
+  }
+
+  .s2h-footer {
+    display: flex;
+    min-height: 105px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    color: var(--s2h-faint);
+    font-size: 11px;
+  }
+
+  .s2h-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--s2h-muted);
+    font-weight: 680;
+  }
+
+  .s2h-footer-brand img {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+
+  .s2h-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 21px;
+  }
+
+  @media (max-width: 1280px) {
+    .s2h-status-pill {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .s2h-nav {
+      display: none;
+    }
+
+    .s2h-actions {
+      margin-left: auto;
+    }
+  }
+
+  @media (max-width: 1100px) {
+
+    .s2h-hero {
+      gap: 38px;
+    }
+
+    .s2h-float-a {
+      right: -8px;
+    }
+
+    .s2h-float-b {
+      left: -8px;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .s2h-nav {
+      display: none;
+    }
+
+    .s2h-actions {
+      margin-left: auto;
+    }
+
+    .s2h-hero {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      min-height: 0;
+      padding-top: 68px;
+    }
+
+    .s2h-hero-copy {
+      max-width: 720px;
+    }
+
+    .s2h-stage {
+      width: min(100%, 650px);
+      min-height: 520px;
+      margin: 0 auto;
+    }
+
+    .s2h-card-code,
+    .s2h-card-pool {
+      grid-column: span 12;
+      min-height: 0;
+    }
+
+    .s2h-card-small {
+      grid-column: span 6;
+    }
+
+    .s2h-start-grid,
+    .s2h-billing-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .s2h-terminal {
+      max-width: 680px;
+    }
+
+    .s2h-section-intro {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .s2h-container {
+      width: min(100% - 30px, 620px);
+    }
+
+    .s2h-header-inner {
+      min-height: 70px;
+      gap: 10px;
+    }
+
+    .s2h-brand {
+      font-size: 14px;
+    }
+
+    .s2h-brand-mark {
+      width: 33px;
+      height: 33px;
+      border-radius: 9px;
+    }
+
+    .s2h-actions .s2h-login-link {
+      display: none;
+    }
+
+    .s2h-btn {
+      min-height: 38px;
+      padding: 0 13px;
+      font-size: 12px;
+    }
+
+    .s2h-theme-toggle {
+      width: 32px;
+      height: 32px;
+    }
+
+    .s2h-hero {
+      gap: 36px;
+      padding: 50px 0 54px;
+    }
+
+    .s2h-eyebrow {
+      margin-bottom: 17px;
+      font-size: 10px;
+    }
+
+    .s2h-hero h1 {
+      margin-bottom: 21px;
+      font-size: clamp(40px, 11vw, 58px);
+      letter-spacing: -0.058em;
+    }
+
+    .s2h-lead {
+      margin-bottom: 25px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+
+    .s2h-cta-row,
+    .s2h-cta-row .s2h-btn {
+      width: 100%;
+    }
+
+    .s2h-proof-row {
+      gap: 8px 15px;
+    }
+
+    .s2h-stage {
+      min-height: 410px;
+    }
+
+    .s2h-orbit-a {
+      width: 430px;
+      height: 430px;
+    }
+
+    .s2h-orbit-b {
+      width: 350px;
+      height: 350px;
+    }
+
+    .s2h-console {
+      border-radius: 18px;
+    }
+
+    .s2h-console-grid {
+      grid-template-columns: 95px minmax(0, 1fr);
+      min-height: 370px;
+    }
+
+    .s2h-console-sidebar {
+      padding: 12px 8px;
+    }
+
+    .s2h-console-brand span {
+      display: none;
+    }
+
+    .s2h-side-item {
+      padding: 7px 6px;
+      font-size: 8px;
+    }
+
+    .s2h-side-item::before {
+      width: 9px;
+      height: 9px;
+    }
+
+    .s2h-console-main {
+      padding: 16px 12px 14px;
+    }
+
+    .s2h-kpi {
+      padding: 8px 6px;
+    }
+
+    .s2h-kpi strong {
+      font-size: 10px;
+    }
+
+    .s2h-float-card {
+      display: none;
+    }
+
+    .s2h-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .s2h-strip-item {
+      padding: 19px 16px;
+    }
+
+    .s2h-strip-item:nth-child(3) {
+      border-left: 0;
+    }
+
+    .s2h-strip-item:nth-child(n + 3) {
+      border-top: 1px solid var(--s2h-line);
+    }
+
+    .s2h-section {
+      padding-top: 78px;
+    }
+
+    .s2h-section-head {
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    .s2h-section h2 {
+      font-size: clamp(32px, 9vw, 45px);
+    }
+
+    .s2h-section-intro {
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .s2h-card {
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .s2h-card-small {
+      grid-column: span 12;
+      min-height: 0;
+    }
+
+    .s2h-codebox {
+      font-size: 10px;
+    }
+
+    .s2h-step {
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 13px;
+    }
+
+    .s2h-step-index {
+      width: 34px;
+      height: 34px;
+    }
+
+    .s2h-terminal-body {
+      padding: 19px 16px 22px;
+      font-size: 10px;
+    }
+
+    .s2h-ledger-table-row {
+      grid-template-columns: 1fr auto;
+    }
+
+    .s2h-ledger-table-row time {
+      display: none;
+    }
+
+    .s2h-final {
+      display: block;
+      margin-top: 78px;
+      border-radius: 23px;
+      padding: 33px 25px;
+    }
+
+    .s2h-final-actions {
+      justify-content: flex-start;
+      margin-top: 24px;
+    }
+
+    .s2h-final-actions .s2h-btn {
+      min-height: 41px;
+    }
+
+    .s2h-footer {
+      display: block;
+      padding: 27px 0 32px;
+    }
+
+    .s2h-footer-links {
+      margin-top: 14px;
+    }
+  }
+
+  @media (max-width: 440px) {
+    .s2h-actions .s2h-start-link {
+      display: none;
+    }
+
+    .s2h-kpis {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .s2h-kpi:last-child {
+      display: none;
+    }
+
+    .s2h-console-grid {
+      grid-template-columns: 76px minmax(0, 1fr);
+    }
+
+    .s2h-side-item span {
+      display: none;
+    }
+
+    .s2h-console-heading h3 {
+      font-size: 12px;
+    }
+
+    .s2h-strip {
+      grid-template-columns: 1fr;
+    }
+
+    .s2h-strip-item + .s2h-strip-item {
+      border-top: 1px solid var(--s2h-line);
+      border-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .s2h-root *,
+    .s2h-root *::before,
+    .s2h-root *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
+
+<div class="s2h-root">
+  <input class="s2h-theme-input" id="s2h-theme-switch" type="checkbox" aria-label="切换深色主题" />
+
+  <div class="s2h-page">
+    <header class="s2h-header">
+      <div class="s2h-container s2h-header-inner">
+        <a class="s2h-brand" href="/home" aria-label="LargeChestnut 首页">
+          <span class="s2h-brand-mark" aria-hidden="true"><img src="https://download.largechestnut.com/assets/largechestnut-icon.png" alt="" /></span>
+          <span>LargeChestnut</span>
+        </a>
+
+        <nav class="s2h-nav" aria-label="首页导航">
+          <a href="#s2h-capabilities">产品能力</a>
+          <a href="/model-plaza">模型价格</a>
+          <a href="#s2h-start">接入指南</a>
+          <a href="#s2h-billing">计费与用量</a>
+          <a href="#s2h-faq">常见问题</a>
+        </nav>
+
+        <div class="s2h-actions">
+          <span class="s2h-status-pill"><i aria-hidden="true"></i>AI API Gateway</span>
+          <label class="s2h-theme-toggle" for="s2h-theme-switch" title="切换主题">
+            <span class="s2h-theme-light" aria-hidden="true">☼</span>
+            <span class="s2h-theme-dark" aria-hidden="true">☾</span>
+          </label>
+          <a class="s2h-btn s2h-btn-secondary s2h-btn-small s2h-download-link" href="https://download.largechestnut.com/" target="_blank" rel="noopener noreferrer">客户端下载 <span aria-hidden="true">↗</span></a>
+          <a class="s2h-btn s2h-btn-secondary s2h-btn-small s2h-login-link" href="/login">登录</a>
+          <a class="s2h-btn s2h-btn-primary s2h-btn-small s2h-start-link" href="/register">免费开始 <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="s2h-container s2h-hero">
+        <div class="s2h-hero-copy">
+          <div class="s2h-eyebrow">AI API Gateway · 订阅配额分发</div>
+          <h1>一个 Key，<br /><span>连接 AI 工作流。</span></h1>
+          <p class="s2h-lead">
+            LargeChestnut 把上游账号、配额分发、智能调度与 Token 计费收进同一个控制台。兼容 OpenAI 与 Anthropic 协议，
+            现有 SDK 通常只需要修改 Base URL，就能沿用熟悉的调用方式。
+          </p>
+          <div class="s2h-cta-row">
+            <a class="s2h-btn s2h-btn-primary" href="/register">创建账号 <span aria-hidden="true">&rarr;</span></a>
+            <a class="s2h-btn s2h-btn-secondary" href="https://download.largechestnut.com/" target="_blank" rel="noopener noreferrer">下载客户端</a>
+            <a class="s2h-btn s2h-btn-secondary" href="/model-plaza">查看模型与价格</a>
+          </div>
+          <div class="s2h-proof-row" aria-label="平台特点">
+            <span>OpenAI / Anthropic 兼容</span>
+            <span>按 Token 精确计费</span>
+            <span>请求与用量可追踪</span>
+          </div>
+        </div>
+
+        <div class="s2h-stage" aria-label="LargeChestnut 控制台界面示意">
+          <div class="s2h-orbit s2h-orbit-a" aria-hidden="true"></div>
+          <div class="s2h-orbit s2h-orbit-b" aria-hidden="true"></div>
+
+          <div class="s2h-console">
+            <div class="s2h-console-top">
+              <span class="s2h-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <strong>LargeChestnut Console</strong>
+              <span class="s2h-live-pill"><i aria-hidden="true"></i>Live</span>
+            </div>
+
+            <div class="s2h-console-grid">
+              <aside class="s2h-console-sidebar" aria-hidden="true">
+                <div class="s2h-console-brand"><img src="https://download.largechestnut.com/assets/largechestnut-icon.png" alt="" /><span>LargeChestnut</span></div>
+                <div class="s2h-side-item s2h-side-item-active"><span>概览</span></div>
+                <div class="s2h-side-item"><span>API 密钥</span></div>
+                <div class="s2h-side-item"><span>用量与账单</span></div>
+                <div class="s2h-side-item"><span>账户池</span></div>
+                <div class="s2h-side-item"><span>订阅与充值</span></div>
+                <div class="s2h-console-spacer"></div>
+                <div class="s2h-console-user"><span class="s2h-avatar">LC</span><span>workspace</span></div>
+              </aside>
+
+              <div class="s2h-console-main">
+                <div class="s2h-console-heading">
+                  <div>
+                    <h3>Gateway overview</h3>
+                    <p>统一入口 · 配额分发 · 用量追踪</p>
+                  </div>
+                  <span class="s2h-healthy">running</span>
+                </div>
+
+                <div class="s2h-kpis">
+                  <div class="s2h-kpi"><span>可用通道</span><strong>多上游</strong></div>
+                  <div class="s2h-kpi"><span>调度策略</span><strong>智能路由</strong></div>
+                  <div class="s2h-kpi"><span>计费粒度</span><strong>Token</strong></div>
+                </div>
+
+                <div class="s2h-request-card">
+                  <div class="s2h-request-head"><span>REQUEST</span><code>POST /v1/chat/completions</code></div>
+                  <div class="s2h-flow">
+                    <span class="s2h-flow-node">Your App</span>
+                    <span class="s2h-flow-arrow" aria-hidden="true">&rarr;</span>
+                    <span class="s2h-flow-node s2h-flow-node-accent">LargeChestnut</span>
+                    <span class="s2h-flow-arrow" aria-hidden="true">&rarr;</span>
+                    <span class="s2h-flow-node">Upstream</span>
+                  </div>
+                  <div class="s2h-route-list">
+                    <div class="s2h-route-row"><i></i><span>OpenAI · OAuth + API Key</span><em>ready</em></div>
+                    <div class="s2h-route-row"><i></i><span>Anthropic · Messages API</span><em>ready</em></div>
+                    <div class="s2h-route-row"><i></i><span>Custom · Base URL</span><em>ready</em></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="s2h-float-card s2h-float-a" aria-hidden="true">
+            <span class="s2h-float-icon">↻</span>
+            <div><strong>Smart Routing</strong><small>可用性优先 · 粘性会话</small></div>
+          </div>
+          <div class="s2h-float-card s2h-float-b" aria-hidden="true">
+            <span class="s2h-float-icon s2h-float-icon-green">Σ</span>
+            <div><strong>Token Ledger</strong><small>请求级用量与成本</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="s2h-container s2h-strip" aria-label="核心能力摘要">
+        <div class="s2h-strip-item"><span class="s2h-strip-number">01</span><div><strong>多账号池</strong><span>OAuth 与 API Key 上游账号统一纳管</span></div></div>
+        <div class="s2h-strip-item"><span class="s2h-strip-number">02</span><div><strong>智能调度</strong><span>按可用性选择上游，支持粘性会话</span></div></div>
+        <div class="s2h-strip-item"><span class="s2h-strip-number">03</span><div><strong>精确计费</strong><span>Token 级用量追踪与成本计算</span></div></div>
+        <div class="s2h-strip-item"><span class="s2h-strip-number">04</span><div><strong>支付闭环</strong><span>充值、订阅、订单与控制台集中处理</span></div></div>
+      </section>
+
+      <section class="s2h-container s2h-section" id="s2h-capabilities">
+        <div class="s2h-section-head">
+          <div>
+            <div class="s2h-kicker">Core capabilities</div>
+            <h2>不只是转发请求，<br />更是一套可运营的网关。</h2>
+          </div>
+          <p class="s2h-section-intro">从账号池到账单，从并发限制到支付闭环，LargeChestnut 围绕真实的 API 分发场景设计。</p>
+        </div>
+
+        <div class="s2h-bento">
+          <article class="s2h-card s2h-card-code">
+            <div class="s2h-card-label">Drop-in compatible</div>
+            <h3>保留熟悉的 SDK 与调用方式</h3>
+            <p>把 Base URL 指向 LargeChestnut，继续使用现有客户端、SDK 和脚本。模型与端点以站点实际配置为准。</p>
+            <pre class="s2h-codebox"><span class="muted">curl</span> https://your-domain.com/v1/chat/completions \
+  -H <span class="string">"Authorization: Bearer $LARGECHESTNUT_KEY"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{
+    "<span class="key">model</span>": "your-model",
+    "<span class="key">messages</span>": [{ "<span class="key">role</span>": "user", "<span class="key">content</span>": "Hello" }]
+  }'</span></pre>
+          </article>
+
+          <article class="s2h-card s2h-card-pool">
+            <div class="s2h-card-label">Account pool</div>
+            <h3>账号池与密钥分发</h3>
+            <p>统一纳管 OAuth 与 API Key 上游账号，为每位用户生成独立 Key，并保留清晰的归属与审计线索。</p>
+            <div class="s2h-pool-visual" aria-hidden="true">
+              <div class="s2h-pool-row"><span class="s2h-pool-avatar">OA</span><div class="s2h-pool-copy"><strong>OpenAI · OAuth</strong><span>pool / default</span></div><span class="s2h-pool-state">active</span></div>
+              <div class="s2h-pool-row"><span class="s2h-pool-avatar s2h-pool-avatar-green">AN</span><div class="s2h-pool-copy"><strong>Anthropic · API Key</strong><span>pool / premium</span></div><span class="s2h-pool-state">active</span></div>
+              <div class="s2h-pool-row"><span class="s2h-pool-avatar s2h-pool-avatar-dark">UP</span><div class="s2h-pool-copy"><strong>Custom upstream</strong><span>Base URL + credentials</span></div><span class="s2h-pool-state s2h-pool-state-warm">standby</span></div>
+            </div>
+          </article>
+
+          <article class="s2h-card s2h-card-small">
+            <div class="s2h-card-label">Scheduling</div>
+            <h3>智能调度</h3>
+            <p>可用性优先地选择上游，支持粘性会话、用户级与账号级并发限制，以及请求和 Token 速率控制。</p>
+            <div class="s2h-mini-panel" aria-hidden="true">
+              <div class="s2h-mini-route"><span>route / sticky</span><span>enabled</span></div>
+              <div class="s2h-mini-route"><span>fallback / next</span><span>ready</span></div>
+              <div class="s2h-mini-route"><span>limits / per-key</span><span>applied</span></div>
+            </div>
+          </article>
+
+          <article class="s2h-card s2h-card-small">
+            <div class="s2h-card-label">Billing</div>
+            <h3>精确计费</h3>
+            <p>按 Token 追踪输入与输出用量，计算请求成本，并接入余额、订阅配额与消费记录。</p>
+            <div class="s2h-ledger" aria-hidden="true">
+              <div class="s2h-ledger-row"><span>input tokens</span><strong>1,284</strong></div>
+              <div class="s2h-ledger-row"><span>output tokens</span><strong>2,760</strong></div>
+              <div class="s2h-ledger-row"><span>request status</span><strong>settled</strong></div>
+            </div>
+          </article>
+
+          <article class="s2h-card s2h-card-small">
+            <div class="s2h-card-label">Operations</div>
+            <h3>运营后台</h3>
+            <p>用户、订单、渠道、监控与审计集中管理；需要时还可通过 iframe 接入工单等外部系统。</p>
+            <div class="s2h-ops-grid" aria-hidden="true">
+              <div class="s2h-ops-tile">Users</div>
+              <div class="s2h-ops-tile">Orders</div>
+              <div class="s2h-ops-tile">Channels</div>
+              <div class="s2h-ops-tile">Audit</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="s2h-container s2h-section" id="s2h-start">
+        <div class="s2h-section-head">
+          <div>
+            <div class="s2h-kicker">Quick start</div>
+            <h2>三步，把请求接到正确的上游。</h2>
+          </div>
+          <p class="s2h-section-intro">不需要重写业务逻辑。先拿到 Key，再把 Base URL 换到你的 LargeChestnut 站点即可开始。</p>
+        </div>
+
+        <div class="s2h-start-grid">
+          <div class="s2h-steps">
+            <div class="s2h-step">
+              <span class="s2h-step-index">01</span>
+              <div>
+                <h3>创建账号与 API Key</h3>
+                <p>登录控制台，在密钥页面创建独立 Key，并为不同项目设置备注、限额与可用分组。</p>
+              </div>
+            </div>
+            <div class="s2h-step">
+              <span class="s2h-step-index">02</span>
+              <div>
+                <h3>设置 Base URL</h3>
+                <p>在现有 SDK、客户端或环境变量中，把上游地址改为你的 LargeChestnut 域名，常用路径为 <code>/v1</code>。</p>
+              </div>
+            </div>
+            <div class="s2h-step">
+              <span class="s2h-step-index">03</span>
+              <div>
+                <h3>选择模型并开始调用</h3>
+                <p>从模型广场确认可用模型与分组价格，然后发起第一次请求；之后可在用量页查看 Token 与费用明细。</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="s2h-terminal" aria-label="环境变量配置示例">
+              <div class="s2h-terminal-head">
+                <span class="s2h-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span>environment · example</span>
+              </div>
+              <div class="s2h-terminal-body"><span class="label"># OpenAI-compatible</span>
+<span class="label">OPENAI_BASE_URL</span>=<span class="value">https://your-domain.com/v1</span>
+<span class="label">OPENAI_API_KEY</span>=<span class="value">sk-your-largechestnut-key</span>
+
+<span class="label"># Anthropic-compatible</span>
+<span class="label">ANTHROPIC_BASE_URL</span>=<span class="value">https://your-domain.com</span>
+<span class="label">ANTHROPIC_AUTH_TOKEN</span>=<span class="value">sk-your-largechestnut-key</span>
+
+<span class="green">$</span> curl $OPENAI_BASE_URL/models <span class="cursor" aria-hidden="true"></span></div>
+            </div>
+
+            <div class="s2h-client-strip" aria-label="常见兼容客户端">
+              <span class="s2h-client">OpenAI SDK</span>
+              <span class="s2h-client">Anthropic SDK</span>
+              <span class="s2h-client">Claude Code</span>
+              <span class="s2h-client">Codex</span>
+              <span class="s2h-client">Cursor</span>
+              <span class="s2h-client">自定义客户端</span>
+              <span class="s2h-client-note">兼容能力取决于站点配置的上游与端点；具体模型、协议和路径请以模型广场及站点说明为准。</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="s2h-container s2h-section" id="s2h-billing">
+        <div class="s2h-section-head">
+          <div>
+            <div class="s2h-kicker">Usage & billing</div>
+            <h2>每一笔消耗，<br />都能找到来处。</h2>
+          </div>
+          <p class="s2h-section-intro">请求记录、Token 用量、模型倍率与费用结算在同一条链路里，方便对账，也方便控制成本。</p>
+        </div>
+
+        <div class="s2h-billing-grid">
+          <div class="s2h-ledger-card">
+            <div class="s2h-ledger-head"><strong>Usage ledger</strong><span>示例记录</span></div>
+            <div class="s2h-ledger-table" aria-hidden="true">
+              <div class="s2h-ledger-table-row">
+                <time>14:32:08</time>
+                <div class="s2h-ledger-model"><strong>API · chat completion</strong><span>key / project-alpha</span></div>
+                <span class="s2h-ledger-cost">Token 已计量</span>
+              </div>
+              <div class="s2h-ledger-table-row">
+                <time>14:31:42</time>
+                <div class="s2h-ledger-model"><strong>API · messages</strong><span>key / claude-code</span></div>
+                <span class="s2h-ledger-cost">Token 已计量</span>
+              </div>
+              <div class="s2h-ledger-table-row">
+                <time>14:30:19</time>
+                <div class="s2h-ledger-model"><strong>API · responses</strong><span>key / agent-runner</span></div>
+                <span class="s2h-ledger-cost">Token 已计量</span>
+              </div>
+              <div class="s2h-ledger-table-row">
+                <time>14:29:51</time>
+                <div class="s2h-ledger-model"><strong>API · streaming request</strong><span>key / playground</span></div>
+                <span class="s2h-ledger-cost">Token 已计量</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="s2h-billing-notes">
+            <div class="s2h-note-card">
+              <span class="s2h-note-tag">token-level</span>
+              <h3>用量看得见，成本算得清。</h3>
+              <p>输入、输出与请求状态分别记录，按模型和分组倍率结算。余额、订阅配额与账单在控制台集中查看。</p>
+            </div>
+            <div class="s2h-note-card">
+              <span class="s2h-note-tag">payment-ready</span>
+              <h3>从充值到续费，不必跳出控制台。</h3>
+              <p>支持接入易支付、支付宝官方、微信官方与 Stripe 等支付渠道；实际开放项由站点配置决定。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="s2h-container s2h-section" id="s2h-faq">
+        <div class="s2h-section-head">
+          <div>
+            <div class="s2h-kicker">FAQ</div>
+            <h2>开始之前，你可能想知道。</h2>
+          </div>
+          <p class="s2h-section-intro">这里整理的是接入与使用层面的常见问题，具体模型、价格和支付方式以你的站点配置为准。</p>
+        </div>
+
+        <div class="s2h-faq-list">
+          <details>
+            <summary>现有的 OpenAI / Anthropic SDK 可以直接使用吗？</summary>
+            <div class="s2h-faq-answer"><p>通常可以。保留原有 SDK 和业务代码，把 Base URL 改为你的 LargeChestnut 地址，并使用站点生成的 API Key。Anthropic 客户端一般使用站点根地址，OpenAI 兼容客户端通常使用 <code>/v1</code>；请以站点说明为准。</p></div>
+          </details>
+          <details>
+            <summary>模型和价格在哪里查看？</summary>
+            <div class="s2h-faq-answer"><p>登录后打开<a href="/model-plaza">模型广场</a>，可以查看当前可用模型、所属分组、倍率与价格信息。实际可调用模型取决于站点已配置的渠道与账号池。</p></div>
+          </details>
+          <details>
+            <summary>请求是如何分配到上游账号的？</summary>
+            <div class="s2h-faq-answer"><p>LargeChestnut 会根据可用性、请求特征与调度策略选择上游账号，并支持粘性会话、并发限制、速率限制和必要的故障切换。这样可以减少手工切换与重复配置。</p></div>
+          </details>
+          <details>
+            <summary>API Key 怎么计费？余额和用量在哪里看？</summary>
+            <div class="s2h-faq-answer"><p>平台按实际请求的 Token 用量与模型倍率计费。登录控制台后，可在用量与账单页面查看余额、消费记录、请求明细和订阅配额。</p></div>
+          </details>
+          <details>
+            <summary>支持哪些充值方式？</summary>
+            <div class="s2h-faq-answer"><p>项目支持接入易支付、支付宝官方、微信官方与 Stripe 等渠道，也支持兑换码与订阅套餐。你的站点最终开放哪些方式，以支付配置和充值页面为准。</p></div>
+          </details>
+          <details>
+            <summary>适合个人开发者还是团队运营？</summary>
+            <div class="s2h-faq-answer"><p>两者都适合。个人开发者可以用统一入口管理多个模型与 Key；团队或平台运营者可以使用账号池、用户与分组、并发限制、计费、订单和审计能力搭建完整的分发体系。</p></div>
+          </details>
+        </div>
+      </section>
+
+      <section class="s2h-container s2h-final" aria-labelledby="s2h-final-title">
+        <div class="s2h-final-copy">
+          <div class="s2h-kicker">Ready when you are</div>
+          <h2 id="s2h-final-title">把分散的 AI 接入，收进一个清晰入口。</h2>
+          <p>创建账号、生成 Key，然后从第一次请求开始。模型、余额与用量都会留在同一个控制台里。</p>
+        </div>
+        <div class="s2h-final-actions">
+          <a class="s2h-btn s2h-btn-secondary" href="/model-plaza">先看模型</a>
+          <a class="s2h-btn s2h-btn-secondary" href="https://download.largechestnut.com/" target="_blank" rel="noopener noreferrer">下载客户端</a>
+          <a class="s2h-btn s2h-btn-primary" href="/register">免费开始 <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="s2h-container s2h-footer">
+      <div class="s2h-footer-brand"><img src="https://download.largechestnut.com/assets/largechestnut-icon.png" alt="" /><span>LargeChestnut</span><span style="font-weight: 500; color: var(--s2h-faint);">AI API Gateway</span></div>
+      <div class="s2h-footer-links">
+        <a href="https://download.largechestnut.com/" target="_blank" rel="noopener noreferrer">客户端下载</a>
+        <a href="#s2h-capabilities">产品能力</a>
+        <a href="/model-plaza">模型与价格</a>
+        <a href="/login">登录</a>
+        <a href="/register">注册</a>
+      </div>
+    </footer>
+  </div>
+</div>

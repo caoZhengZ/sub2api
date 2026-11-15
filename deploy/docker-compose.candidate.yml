@@ -1,0 +1,66 @@
+# LargeChestnut / Sub2API candidate deployment
+#
+# Purpose:
+# - Run a new application container beside the existing production container.
+# - Reuse the existing PostgreSQL and Redis containers/network.
+# - Keep the old service running and untouched for instant rollback.
+#
+# Start it with ./candidate-up.sh instead of calling `docker compose up`
+# directly, because the script detects the existing Compose network and takes
+# a PostgreSQL backup before the candidate can run migrations.
+
+services:
+  sub2api-candidate:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${CANDIDATE_VERSION:-largechestnut-candidate}
+        COMMIT: ${CANDIDATE_COMMIT:-local}
+    image: largechestnut/sub2api:${CANDIDATE_TAG:-candidate}
+    container_name: sub2api-candidate
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
+    ports:
+      - "${CANDIDATE_BIND_HOST:-127.0.0.1}:${CANDIDATE_PORT:-18080}:8080"
+    volumes:
+      - ./data-candidate:/app/data:Z
+    env_file:
+      - .env
+    environment:
+      AUTO_SETUP: "true"
+      SERVER_HOST: "0.0.0.0"
+      SERVER_PORT: "8080"
+      SERVER_MODE: ${SERVER_MODE:-release}
+
+      DATABASE_HOST: ${CANDIDATE_DATABASE_HOST:-sub2api-postgres}
+      DATABASE_PORT: "5432"
+      DATABASE_USER: ${POSTGRES_USER:-sub2api}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required in deploy/.env}
+      DATABASE_DBNAME: ${POSTGRES_DB:-sub2api}
+      DATABASE_SSLMODE: "disable"
+
+      REDIS_HOST: ${CANDIDATE_REDIS_HOST:-sub2api-redis}
+      REDIS_PORT: "6379"
+      REDIS_USERNAME: ${REDIS_USERNAME:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
+      REDIS_ENABLE_TLS: ${REDIS_ENABLE_TLS:-false}
+    networks:
+      - existing
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  existing:
+    external: true
+    name: ${SUB2API_NETWORK:?Set SUB2API_NETWORK to the existing Docker network}

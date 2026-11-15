@@ -3,10 +3,10 @@
     <!-- Mini Progress Display -->
     <button
       @click="toggleTooltip"
-      class="flex cursor-pointer items-center gap-2 rounded-xl bg-purple-50 px-3 py-1.5 transition-colors hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30"
+      class="flex cursor-pointer items-center gap-2 rounded-xl border border-stone-200/80 bg-stone-100/80 px-3 py-1.5 transition-colors hover:bg-stone-200/80 dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1]"
       :title="t('subscriptionProgress.viewDetails')"
     >
-      <Icon name="creditCard" size="sm" class="text-purple-600 dark:text-purple-400" />
+      <Icon name="creditCard" size="sm" class="text-ink dark:text-stone-200" />
       <div class="flex items-center gap-1.5">
         <!-- Combined progress indicator -->
         <div class="flex items-center gap-0.5">
@@ -17,7 +17,7 @@
             :class="getProgressDotClass(sub)"
           ></div>
         </div>
-        <span class="text-xs font-medium text-purple-700 dark:text-purple-300">
+        <span class="text-xs font-semibold text-brand-600 dark:text-brand-300">
           {{ activeSubscriptions.length }}
         </span>
       </div>
@@ -167,7 +167,7 @@
           <router-link
             to="/subscriptions"
             @click="closeTooltip"
-            class="block w-full py-1 text-center text-xs text-primary-600 hover:underline dark:text-primary-400"
+            class="brand-link block w-full py-1 text-center text-xs"
           >
             {{ t('subscriptionProgress.viewAll') }}
           </router-link>

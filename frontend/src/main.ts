@@ -24,9 +24,8 @@ function initIOSViewportZoomFix() {
 
 function initThemeClass() {
   const savedTheme = localStorage.getItem('theme')
-  const shouldUseDark =
-    savedTheme === 'dark' ||
-    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  // LargeChestnut 默认使用暖白浅色主题；只有用户主动选择过深色时才恢复深色。
+  const shouldUseDark = savedTheme === 'dark'
   document.documentElement.classList.toggle('dark', shouldUseDark)
 }
 
@@ -45,7 +44,7 @@ async function bootstrap() {
   appStore.initFromInjectedConfig()
 
   // Set document title immediately after config is loaded
-  if (appStore.siteName && appStore.siteName !== 'Sub2API') {
+  if (appStore.siteName) {
     document.title = `${appStore.siteName} - AI API Gateway`
   }
   updateFavicon(appStore.siteLogo)

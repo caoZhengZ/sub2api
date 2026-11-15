@@ -30,22 +30,30 @@ fi
 CANDIDATE_PORT="${CANDIDATE_PORT:-18080}"
 CANDIDATE_TAG="${CANDIDATE_TAG:-candidate-$(date +%Y%m%d-%H%M%S)}"
 BACKUP_DIR="${BACKUP_DIR:-backups}"
+SKIP_DB_BACKUP="${SKIP_DB_BACKUP:-0}"
+SOURCE_DATA_DIR="${SOURCE_DATA_DIR:-data}"
 mkdir -p "$BACKUP_DIR" data-candidate
 
-if [ -f data/config.yaml ] && [ ! -f data-candidate/config.yaml ]; then
-  cp data/config.yaml data-candidate/config.yaml
+if [ -d "$SOURCE_DATA_DIR" ] && [ ! -f data-candidate/config.yaml ]; then
+  cp -a "$SOURCE_DATA_DIR/." data-candidate/
 fi
 
-backup_file="$BACKUP_DIR/sub2api-before-candidate-$(date +%Y%m%d-%H%M%S).dump"
-echo "Backing up PostgreSQL to $backup_file"
-docker exec "$POSTGRES_CONTAINER" sh -lc \
-  'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$backup_file"
+backup_file=""
+if [ "$SKIP_DB_BACKUP" = "1" ]; then
+  echo "Skipping PostgreSQL backup because SKIP_DB_BACKUP=1"
+else
+  backup_file="$BACKUP_DIR/sub2api-before-candidate-$(date +%Y%m%d-%H%M%S).dump"
+  echo "Backing up PostgreSQL to $backup_file"
+  docker exec "$POSTGRES_CONTAINER" sh -lc \
+    'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$backup_file"
+fi
 
 echo "Docker network: $SUB2API_NETWORK"
 echo "Building and starting candidate on 127.0.0.1:$CANDIDATE_PORT"
 SUB2API_NETWORK="$SUB2API_NETWORK" \
 CANDIDATE_PORT="$CANDIDATE_PORT" \
 CANDIDATE_TAG="$CANDIDATE_TAG" \
+CANDIDATE_COMMIT="${CANDIDATE_COMMIT:-$(git -C .. rev-parse --short HEAD 2>/dev/null || echo local)}" \
 docker compose -f docker-compose.candidate.yml up -d --build
 
 health_url="http://127.0.0.1:$CANDIDATE_PORT/health"
@@ -55,7 +63,9 @@ while [ "$attempt" -le 30 ]; do
     echo "Candidate is healthy: $health_url"
     echo "Old production container is still running and untouched."
     echo "Candidate image tag: $CANDIDATE_TAG"
-    echo "Database backup: $backup_file"
+    if [ -n "$backup_file" ]; then
+      echo "Database backup: $backup_file"
+    fi
     exit 0
   fi
   sleep 3

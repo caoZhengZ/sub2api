@@ -41,6 +41,18 @@ chmod +x candidate-up.sh
 ./candidate-up.sh
 ```
 
+如果最近已经有可恢复的数据库备份，并且本次发布确认没有数据库迁移，可以跳过
+整库导出。仍建议首次切换前先确认备份可用：
+
+```bash
+SKIP_DB_BACKUP=1 \
+SOURCE_DATA_DIR=/www/dk_project/sub2api/data \
+./candidate-up.sh
+```
+
+`SOURCE_DATA_DIR` 会把旧服务的 `config.yaml`、模型价格等运行数据复制到
+`data-candidate/`，不会修改旧目录。
+
 脚本会：
 
 - 自动找到旧 PostgreSQL 容器所在的 Docker 网络

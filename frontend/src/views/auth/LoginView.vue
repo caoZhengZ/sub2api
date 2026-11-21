@@ -20,6 +20,25 @@
         {{ t('auth.desktopLoginBack') }}
       </button>
     </div>
+    <section v-else-if="isAuthenticatedDesktopHandoff" class="space-y-4">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+        {{ t('auth.desktopLoginConfirmTitle') }}
+      </h2>
+      <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('auth.desktopLoginConfirmDescription') }}</p>
+      <p v-if="authStore.user?.email" class="break-all font-medium text-gray-900 dark:text-white">
+        {{ authStore.user.email }}
+      </p>
+      <button
+        type="button"
+        data-testid="desktop-handoff-confirm"
+        :disabled="isLoading"
+        class="btn btn-primary w-full"
+        @click="authorizeExistingDesktopSession"
+      >
+        {{ isLoading ? t('auth.signingIn') : t('auth.desktopLoginConfirmButton') }}
+      </button>
+    </section>
+
     <div v-else class="space-y-6">
       <!-- Title -->
       <div class="text-center">
@@ -217,7 +236,7 @@
     </div>
 
     <!-- Footer -->
-    <template v-if="!desktopHandoffCallback && !backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
+    <template v-if="!desktopHandoffCallback && !isAuthenticatedDesktopHandoff && !backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
       <p class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
         <router-link
@@ -256,6 +275,7 @@ import TotpLoginModal from '@/components/auth/TotpLoginModal.vue'
 import Icon from '@/components/icons/Icon.vue'
 import TurnstileWidget from '@/components/CaptchaChallenge.vue'
 import { useAuthStore, useAppStore } from '@/stores'
+import { readDesktopHandoffParams } from '@/utils/desktopHandoff'
 import {
   buildOAuthLoginStartURL,
   createDesktopHandoff,
@@ -290,6 +310,9 @@ const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 const publicSettingsLoaded = ref<boolean>(false)
 const desktopHandoffCallback = ref<string | null>(null)
+const isAuthenticatedDesktopHandoff = computed(() =>
+  authStore.isAuthenticated && readDesktopHandoffParams(router.currentRoute.value.query) !== null
+)
 
 // Public settings
 const registrationEnabled = ref<boolean>(false)
@@ -580,18 +603,8 @@ function validateForm(): boolean {
   return isValid
 }
 
-function readDesktopHandoffParams(): { state: string; challenge: string } | null {
-  const state = router.currentRoute.value.query.desktop_state
-  const challenge = router.currentRoute.value.query.desktop_challenge
-  const normalizedState = typeof state === 'string' ? state.trim() : ''
-  const normalizedChallenge = typeof challenge === 'string' ? challenge.trim() : ''
-  if (!/^[A-Za-z0-9_-]{32,256}$/.test(normalizedState)) return null
-  if (!/^[A-Za-z0-9_-]{43,128}$/.test(normalizedChallenge)) return null
-  return { state: normalizedState, challenge: normalizedChallenge }
-}
-
 async function completeDesktopHandoff(): Promise<boolean> {
-  const params = readDesktopHandoffParams()
+  const params = readDesktopHandoffParams(router.currentRoute.value.query)
   if (!params) return false
   const result = await createDesktopHandoff(params.state, params.challenge)
   const callback = new URL('zcode://oauth/callback')
@@ -600,6 +613,18 @@ async function completeDesktopHandoff(): Promise<boolean> {
   callback.searchParams.set('code', result.code)
   desktopHandoffCallback.value = callback.toString()
   return true
+}
+
+async function authorizeExistingDesktopSession(): Promise<void> {
+  if (isLoading.value || !isAuthenticatedDesktopHandoff.value) return
+  isLoading.value = true
+  try {
+    await completeDesktopHandoff()
+  } catch {
+    appStore.showError(t('auth.desktopLoginFailed'))
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // ==================== Form Handlers ====================

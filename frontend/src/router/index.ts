@@ -13,6 +13,7 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { resolveRouteDocumentTitle } from './title'
+import { readDesktopHandoffParams } from '@/utils/desktopHandoff'
 
 /**
  * Route definitions with lazy loading
@@ -842,7 +843,12 @@ router.beforeEach(async (to, _from, next) => {
   // If route doesn't require auth, allow access
   if (!requiresAuth) {
     // If already authenticated and trying to access login/register, redirect to appropriate dashboard
-    if (authStore.isAuthenticated && (to.path === '/login' || to.path === '/register')) {
+    // 桌面授权必须保留 PKCE 参数进入确认页；普通已登录跳转会丢掉回到客户端的链路。
+    const isDesktopHandoff = to.path === '/login' && readDesktopHandoffParams(to.query) !== null
+    if (
+      authStore.isAuthenticated && !isDesktopHandoff &&
+      (to.path === '/login' || to.path === '/register')
+    ) {
       // In backend mode, non-admin users should NOT be redirected away from login
       // (they are blocked from all protected routes, so redirecting would cause a loop)
       if (appStore.backendModeEnabled && !authStore.isAdmin) {

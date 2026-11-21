@@ -2,11 +2,12 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import LoginView from '@/views/auth/LoginView.vue'
 
-const { getPublicSettingsMock, pushMock, createDesktopHandoffMock, routeQuery } = vi.hoisted(() => ({
+const { getPublicSettingsMock, pushMock, createDesktopHandoffMock, routeQuery, authState } = vi.hoisted(() => ({
   getPublicSettingsMock: vi.fn(),
   pushMock: vi.fn(),
   createDesktopHandoffMock: vi.fn(),
-  routeQuery: {} as Record<string, unknown>
+  routeQuery: {} as Record<string, unknown>,
+  authState: { isAuthenticated: false }
 }))
 
 const publicSettings = {
@@ -52,6 +53,8 @@ vi.mock('vue-i18n', () => ({
 
 vi.mock('@/stores', () => ({
   useAuthStore: () => ({
+    ...authState,
+    user: { email: "desktop-test@example.com" },
     login: vi.fn(),
     loginWithPasskey: vi.fn(),
     login2FA: vi.fn()
@@ -99,6 +102,7 @@ describe('LoginView registration entry', () => {
     pushMock.mockReset()
     createDesktopHandoffMock.mockReset()
     Object.keys(routeQuery).forEach(key => delete routeQuery[key])
+    authState.isAuthenticated = false
     getPublicSettingsMock.mockResolvedValue(publicSettings)
   })
 
@@ -139,5 +143,32 @@ describe('LoginView registration entry', () => {
     expect(callback.searchParams.get('state')).toBe('s'.repeat(43))
     expect(callback.searchParams.get('code')).toBe('one-time-code')
     expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it('requires explicit confirmation for an already authenticated browser', async () => {
+    authState.isAuthenticated = true
+    routeQuery.desktop_state = 's'.repeat(43)
+    routeQuery.desktop_challenge = 'c'.repeat(43)
+    createDesktopHandoffMock.mockResolvedValue({ code: 'one-time-code' })
+    const wrapper = mountLogin()
+    await flushPromises()
+    expect(wrapper.find('form').exists()).toBe(false)
+    expect(wrapper.text()).toContain('desktop-test@example.com')
+    expect(createDesktopHandoffMock).not.toHaveBeenCalled()
+    await wrapper.get('[data-testid="desktop-handoff-confirm"]').trigger('click')
+    await flushPromises()
+    expect(createDesktopHandoffMock).toHaveBeenCalledTimes(1)
+    expect(wrapper.get('a[href^="zcode://"]').attributes('href')).toContain('code=one-time-code')
+    expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it('does not offer current-account authorization for malformed desktop parameters', async () => {
+    authState.isAuthenticated = true
+    routeQuery.desktop_state = 'invalid'
+    routeQuery.desktop_challenge = 'c'.repeat(43)
+    const wrapper = mountLogin()
+    await flushPromises()
+    expect(wrapper.find('[data-testid="desktop-handoff-confirm"]').exists()).toBe(false)
+    expect(createDesktopHandoffMock).not.toHaveBeenCalled()
   })
 })
